@@ -2,110 +2,116 @@
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:columnCount="4"
     android:orientation="horizontal">
     <TextView
-        android:id="@+id/result"
+        android:id="@+id/input_result"
         android:layout_gravity="fill"
         android:layout_columnSpan="4"
-        android:textSize="20dp"
-        android:gravity="center_horizontal"
+        android:textSize="30dp"
+        android:gravity="right"
         />
     　　
     <Button
         android:id="@+id/clear"
         android:text="C"
-        android:textSize="20dp"
+        android:textSize="25dp"
+        android:textColor="#4283d2"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/divide"
         android:text="÷"
-        android:textSize="20dp"
+        android:textSize="25dp"
+        android:textColor="#4283d2"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/multiply"
         android:text="×"
-        android:textSize="20dp"
+        android:textSize="25dp"
+        android:textColor="#4283d2"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/delete"
         android:text="←"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:textStyle="bold"
         android:layout_gravity="fill"
+        android:textColor="#4283d2"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/one"
         android:text="7"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
     　　
     <Button
         android:id="@+id/two"
         android:text="8"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/three"
         android:text="9"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/subtraction"
         android:text="-"
-        android:textSize="20dp"
+        android:textSize="25dp"
+        android:textColor="#4283d2"
         android:layout_gravity="fill"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/four"
         android:text="4"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/five"
         android:text="5"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/six"
         android:text="6"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/plus"
         android:text="+"
-        android:textSize="20dp"
+        android:textColor="#4283d2"
+        android:textSize="25dp"
         android:layout_gravity="fill"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/seven"
         android:text="1"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/eight"
         android:text="2"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/nine"
         android:text="3"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 
     <Button
@@ -113,23 +119,24 @@
         android:layout_gravity="fill"
         android:layout_rowSpan="2"
         android:text="="
-        android:textSize="20dp"
+        android:textColor="#4283d2"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/superplus"
         android:text="%"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
     <Button
         android:id="@+id/zero"
         android:text="0"
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 
     <Button
         android:id="@+id/point"
         android:text="."
-        android:textSize="20dp"
+        android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 </GridLayout>
