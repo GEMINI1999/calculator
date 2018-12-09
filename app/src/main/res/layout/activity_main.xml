@@ -16,7 +16,7 @@
     　　
     <Button
         android:id="@+id/clear"
-        android:text="C"
+        android:text="CLR"
         android:textSize="25dp"
         android:textColor="#4283d2"
         android:background="@drawable/selector_change"/>
@@ -117,7 +117,7 @@
     <Button
         android:id="@+id/equal"
         android:layout_gravity="fill"
-        android:layout_rowSpan="2"
+        android:layout_rowSpan="3"
         android:text="="
         android:textColor="#4283d2"
         android:textSize="25dp"
@@ -137,6 +137,18 @@
     <Button
         android:id="@+id/point"
         android:text="."
+        android:textSize="25dp"
+        android:background="@drawable/selector_change"/>
+    <Button
+        android:id="@+id/zuokuohao"
+        android:text="("
+        android:textSize="25dp"
+        android:layout_gravity="fill"
+        android:layout_columnSpan="2"
+        android:background="@drawable/selector_change"/>
+    <Button
+        android:id="@+id/youkuohao"
+        android:text=")"
         android:textSize="25dp"
         android:background="@drawable/selector_change"/>
 </GridLayout>

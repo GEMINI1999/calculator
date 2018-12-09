@@ -16,7 +16,7 @@ import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     Button bt_0,bt_1,bt_2,bt_3,bt_4,bt_5,bt_6,bt_7,bt_8,bt_9,bt_multiply,bt_divide,bt_plus
-            ,bt_subtraction,bt_point,bt_del,bt_equal,bt_clear,bt_superplus;
+            ,bt_subtraction,bt_point,bt_del,bt_equal,bt_clear,bt_superplus,bt_zuokuohao,bt_youkuohao;
     TextView text_input;
     boolean clear_flag; //清空标识
     private boolean isInStack = false;
@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_equal = (Button)findViewById(R.id.equal);
         bt_clear = (Button)findViewById(R.id.clear);
         bt_superplus = (Button)findViewById(R.id.superplus);
+        bt_zuokuohao = (Button)findViewById(R.id.zuokuohao);
+        bt_youkuohao = (Button)findViewById(R.id.youkuohao);
 
         text_input = (TextView)findViewById(R.id.input_result);
 
@@ -69,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_equal.setOnClickListener(this);
         bt_clear.setOnClickListener(this);
         bt_superplus.setOnClickListener(this);
+        bt_youkuohao.setOnClickListener(this);
+        bt_zuokuohao.setOnClickListener(this);
     }
 
     @Override
@@ -86,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.eight:
             case R.id.nine:
             case R.id.point:
+            case R.id.zuokuohao:
+            case R.id.youkuohao:
                 if(clear_flag){
                     clear_flag = false;
                     str = "";
@@ -124,13 +130,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.equal:
                 String expressions = text_input.getText().toString();
-                String postFix = transform(expressions);
-                getResult(postFix);
+                String postFix = covertToPostFix(expressions);
+                text_input.setText(postFix);
                 break;
         }
     }
-
-    //private void getResult(){
+//        private void getResult(){
 //        String exp = text_input.getText().toString();
 //        if(exp == null || exp.equals("")){
 //            return;
@@ -199,53 +204,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
   //  }
 
-    public String transform(String expressions) {
+    public String covertToPostFix(String expressions) {
         Stack<Character> st = new Stack<Character>(); //运算符栈
-        expressions = expressions+"#";  //最后一位添加“#”以表示运算结束
-        String postFix = ""; //后缀表达式
-        String c2 = "";
-        for (int i=0; i<expressions.length()&&expressions !=null;i++){
-            char c= expressions.charAt(i);
-            if (c != ' '){
-
-                if (isOperator(c)){  //符号判断
-                    /**
-                     * 1、如果栈为空，直接进栈，如果栈非空，需要将栈顶的运算符的优先级和要入栈的运算符优先级比较
-                     * 2、将栈中比入栈的运算符优先级高的出栈，（添加到后缀表达式）然后将该运算符入栈，
-                     */
-                    isInStack =true; //进栈  boolean值为true
-                    if (isInStack ==true || c == '#'){ //如果进栈了，如果是#号，就不进行下面的判断，表示已经到最后一个数了。
-                        postFix +=c2+" ";  //将先前存储的值添加到后缀式后面
-                        c2 ="";     //将该值清楚，以便进行下次存储
-                        isInStack =false;
+        String postFix = "";
+        char ac;
+        for (int i=0; i<expressions.length()&&expressions != null;i++){
+            char c = expressions.charAt(i);
+            switch (c){
+                case '(':
+                    st.push(c);
+                    break;
+                case ')':
+                    ac = st.pop();
+                    while (ac != '('){
+                        postFix += ac;
+                        ac = st.pop();
                     }
-                    if (!st.isEmpty()&& c!='#'){  //如果栈非空，则需要判断
-                        Character ac = st.pop();
-                        while (ac !=null
-                                &&priority(ac.charValue())>priority(c) ){  //判断运算符优先级
-                            postFix +=ac;
-                            ac = null;
-                            //先取出来后判断，如果要跳出循环，将ac值设为null
-                        }
-                        if(ac!=null){
-                            st.push(ac);  //如果没有进行前面的运算符优先级判断，则要将取出的运算符重新压入栈中。
+                case '+':
+                case '-':
+                case '×':
+                case '÷':
+                case '%':
+                    while (!st.isEmpty()){//当栈非空
+                        ac = st.pop();
+                        if(priority(ac) >= priority(c)){//将栈顶元素与当前字符元素进行优先级比较，弹出优先级更高的元素
+                            postFix += ac;
+                            ac = st.pop();
+                        }else{
+                            break;
                         }
                     }
-                    st.push(c);//运算符入栈
-                }
-                else {
-                    Character c1 = (Character) c;
-                    c2 +=c1 ;  //暂时存储该数
-                    //postFix +=c;
-                }
+                    st.push(c);
+                    break;
+                default: postFix += c;
             }
         }
+
         while (!st.isEmpty()){
-            if (calculateOne ==true){  //将最后的‘#’号出栈，因为涉及到每次更新数据以后都会产生一个‘#’号，所以需要设置boolean值来将‘#号移除栈’
-                st.pop();
-                calculateOne = false;
-            }
-            postFix +=" "+st.pop().toString(); //如果栈非空，需要将栈中所有运算符串联到后缀表达式的末尾
+            ac = st.pop();
+            postFix += ac;
         }
         return postFix;  //返回后缀表达式
     }
@@ -275,16 +272,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case '-':
                         result=d1-d2;
                         break;
-                    case '*':
+                    case '×':
                         result=d1*d2;
                         break;
-                    case '/':
+                    case '÷':
                         if (d2 == 0){
                             text_input.setText("error");
                         }
                         result=d1/d2;
-
                         break;
+                    case '%':
+                        result=d1%d2;
                     default:
                         break;
                 }
@@ -307,23 +305,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int priority(char c){
         switch (c){
-            case '#':
-                return 0;
             case '+':
-            case  '-':
-            case  ')':
+            case '-':
                 return 1;
             case '×':
             case '÷':
             case '%':
                 return 2;
-            case '(':
-                return 3;
         }
         return 0;
     }
     private boolean isOperator(char c){
-        if ('+' ==c||'-' == c||'/'==c||'*'==c || '#' ==c){
+        if ('+' ==c||'-' == c||'÷'==c||'×'==c|| '%' == c){
             return true;
         }
         return false;
