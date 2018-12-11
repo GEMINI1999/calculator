@@ -18,9 +18,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button bt_0,bt_1,bt_2,bt_3,bt_4,bt_5,bt_6,bt_7,bt_8,bt_9,bt_multiply,bt_divide,bt_plus
             ,bt_subtraction,bt_point,bt_del,bt_equal,bt_clear,bt_superplus,bt_zuokuohao,bt_youkuohao;
     TextView text_input;
-    boolean clear_flag; //清空标识
-    private boolean isInStack = false;
-    private boolean calculateOne = true;
+    boolean clear_flag;
+
     Stack<String> st = new Stack<String>();
 
     @Override
@@ -90,8 +89,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.eight:
             case R.id.nine:
             case R.id.point:
-            case R.id.zuokuohao:
-            case R.id.youkuohao:
                 if(clear_flag){
                     clear_flag = false;
                     str = "";
@@ -100,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 text_input.setText(str+((Button)view).getText());
                 break;
 
+            case R.id.zuokuohao:
+            case R.id.youkuohao:
             case R.id.plus:
             case R.id.subtraction:
             case R.id.multiply:
@@ -109,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     clear_flag = false;
                     text_input.setText("");
                 }
-                text_input.setText(str+((Button)view).getText());  //在每个运算符 前 后 各加一个 空格
+                text_input.setText(str+ " " +((Button)view).getText() + " ");
                 break;
 
             case R.id.delete:
@@ -131,13 +130,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.equal:
                 String expressions = text_input.getText().toString();
                 String postFix = covertToPostFix(expressions);
-                text_input.setText(postFix);
+                text_input.setText(getResult(postFix));
+                clear_flag = true;
                 break;
         }
     }
 //        private void getResult(){
 //        String exp = text_input.getText().toString();
-//        if(exp == null || exp.equals("")){
+//        if(exp == null || exp.equals("")){s
 //            return;
 //        }
 //        if(!exp.contains(" ")){
@@ -205,56 +205,70 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   //  }
 
     public String covertToPostFix(String expressions) {
-        Stack<Character> st = new Stack<Character>(); //运算符栈
+        Stack<String> stOperator = new Stack<String>();
+        expressions += " ";
         String postFix = "";
-        char ac;
-        for (int i=0; i<expressions.length()&&expressions != null;i++){
-            char c = expressions.charAt(i);
-            switch (c){
-                case '(':
-                    st.push(c);
-                    break;
-                case ')':
-                    ac = st.pop();
-                    while (ac != '('){
-                        postFix += ac;
-                        ac = st.pop();
-                    }
-                case '+':
-                case '-':
-                case '×':
-                case '÷':
-                case '%':
-                    while (!st.isEmpty()){//当栈非空
-                        ac = st.pop();
-                        if(priority(ac) >= priority(c)){//将栈顶元素与当前字符元素进行优先级比较，弹出优先级更高的元素
-                            postFix += ac;
-                            ac = st.pop();
-                        }else{
-                            break;
+        String ac = "";
+        String c = "";
+        char temp;
+        for (int i=0; i<expressions.length()&&expressions != "";i++){
+            temp = expressions.charAt(i);
+            if(temp != ' '){
+                c += temp;
+            }
+            if(temp == ' ') {
+                switch (c) {
+                    case "(":
+                        stOperator.push(c);
+                        break;
+                    case ")":
+                        ac = stOperator.pop();
+                        while (!ac.equals("(")) {
+                            postFix += ac + " ";
+                            ac = stOperator.pop();
                         }
-                    }
-                    st.push(c);
-                    break;
-                default: postFix += c;
+                    case "+":
+                    case "-":
+                    case "×":
+                    case "÷":
+                    case "%":
+                        while (!stOperator.isEmpty()) {
+                            ac = stOperator.peek();//取出栈顶元素而不弹出
+                            if (priority(ac) >= priority(c)) {
+                                stOperator.pop();
+                                postFix += ac + " ";
+                            } else {
+                                break;
+                            }
+                        }
+                        if(!c.equals(")"))
+                            stOperator.push(c);
+                        break;
+                    default:
+                        postFix += c + " ";
+                }
+                c = "";
             }
         }
-
-        while (!st.isEmpty()){
-            ac = st.pop();
-            postFix += ac;
+        while (!stOperator.isEmpty()){
+            ac = stOperator.pop();
+            postFix += ac + " ";
         }
-        return postFix;  //返回后缀表达式
+        return postFix;
     }
 
     public String getResult(String postFix){
-        String c5 = "";
-        for (int i =0;i<postFix.length();i++){
-            char c= postFix.charAt(i);
-            if (c == ' '){
-                st.push(c5.toString()); //数字入栈
-                c5 ="";
-                if (st.contains(" ")){
+        String c = "";
+        char temp;
+        for (int i =0; i < postFix.length();i++){
+            temp = postFix.charAt(i);
+            if(temp != ' '){
+                c += temp;
+            }
+            if (temp == ' '){
+                st.push(c.toString());
+                c = "";
+                if (st.contains(" ")||st.contains("")){
                     st.pop();
                 }
             }
@@ -262,61 +276,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 double d2 = Double.valueOf(st.pop().toString());
                 double d1 = Double.valueOf(st.pop().toString());
-               // Log.i(SERVICE,"d2"+d2);
-              //  Log.i(SERVICE,"d1"+d1);
-                double result=0;
+                double result = 0;
                 switch (c){
-                    case '+':
+                    case "+":
                         result=d1+d2;
                         break;
-                    case '-':
+                    case "-":
                         result=d1-d2;
                         break;
-                    case '×':
+                    case "×":
                         result=d1*d2;
                         break;
-                    case '÷':
+                    case "÷":
                         if (d2 == 0){
-                            text_input.setText("error");
+                            text_input.setText("Error");
+                            break;
                         }
                         result=d1/d2;
                         break;
-                    case '%':
+                    case "%":
                         result=d1%d2;
                     default:
                         break;
                 }
-                String value =String.valueOf(result);
+                String value = String.valueOf(result);
                 if (value.indexOf(".")>0){
                     value = value.replaceAll("0+?$", "");//去掉多余的0
                     value = value.replaceAll("[.]$", "");//如最后一位是.则去掉
                 }
-                st.push(value);  //操作后的结果入栈
-            }
-            else {
-                Character c4 = (Character) c;
-                c5 += c4;
-                // st.push(String.valueOf(c)); //数字入栈
-
+                st.push(value);
+                c = "";
             }
         }
         return st.pop();
     }
 
-    private int priority(char c){
+    private int priority(String c){
         switch (c){
-            case '+':
-            case '-':
+            case "+":
+            case "-":
                 return 1;
-            case '×':
-            case '÷':
-            case '%':
+            case "×":
+            case "÷":
+            case "%":
                 return 2;
         }
         return 0;
     }
-    private boolean isOperator(char c){
-        if ('+' ==c||'-' == c||'÷'==c||'×'==c|| '%' == c){
+    private boolean isOperator(String c){
+        if (c.equals("+")||c.equals("-")||c.equals("÷")||c.equals("×")||c.equals("%")){
             return true;
         }
         return false;
