@@ -18,9 +18,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button bt_0,bt_1,bt_2,bt_3,bt_4,bt_5,bt_6,bt_7,bt_8,bt_9,bt_multiply,bt_divide,bt_plus
             ,bt_subtraction,bt_point,bt_del,bt_equal,bt_clear,bt_superplus,bt_zuokuohao,bt_youkuohao;
     TextView text_input;
-    boolean clear_flag;
-
-    Stack<String> st = new Stack<String>();
+    boolean clear_flag = false;
+    boolean numberInputed = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,26 +88,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.eight:
             case R.id.nine:
             case R.id.point:
+                numberInputed = true;
                 if(clear_flag){
                     clear_flag = false;
                     str = "";
                     text_input.setText("");
                 }
-                text_input.setText(str+((Button)view).getText());
+                if(str != null && !str.equals("") && isOperator(String.valueOf(str.charAt(str.length()- 1))))
+                    text_input.setText(str + " " + ((Button)view).getText());
+                else {
+                    text_input.setText(str + ((Button) view).getText());
+                }
                 break;
 
             case R.id.zuokuohao:
             case R.id.youkuohao:
-            case R.id.plus:
-            case R.id.subtraction:
-            case R.id.multiply:
-            case R.id.divide:
-            case R.id.superplus:
                 if(clear_flag){
                     clear_flag = false;
                     text_input.setText("");
                 }
                 text_input.setText(str+ " " +((Button)view).getText() + " ");
+                break;
+            case R.id.plus:
+            case R.id.subtraction:
+            case R.id.multiply:
+            case R.id.divide:
+            case R.id.superplus:
+                if(str.charAt(str.length()- 1) >= '0' && str.charAt(str.length()- 1) <= '9' ||
+                        str.charAt(str.length() - 1) == ' '){
+                    numberInputed = true;
+                }
+                if(clear_flag){
+                    clear_flag = false;
+                    text_input.setText("");
+                }
+                if(str != null || numberInputed || !str.equals("")&&///???????????
+                        !isOperator(String.valueOf(str.charAt(str.length() - 1)))) {
+                    numberInputed = false;
+                    text_input.setText(str + " " + ((Button) view).getText() + " ");
+                }
                 break;
 
             case R.id.delete:
@@ -116,22 +134,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     clear_flag = false;
                     str = "";
                     text_input.setText("");
-                }else if(str != null && !str.equals("")){
-                    text_input.setText(str.substring(0, str.length()-1));
+                }else if(str != null && !str.equals("")) {//////!!!!!!
+                    if(str.charAt(str.length() - 1) == ' '){
+                        numberInputed = false;
+                    }
+                    else
+                        numberInputed = true;
+                    text_input.setText(str.substring(0, str.length() - 1));
+
                 }
+                if(str.equals(""))
+                    numberInputed = false;
                 break;
 
             case R.id.clear:
                 clear_flag = false;
+                numberInputed = false;
                 str = "";
                 text_input.setText("");
                 break;
 
             case R.id.equal:
                 String expressions = text_input.getText().toString();
-                String postFix = covertToPostFix(expressions);
-                text_input.setText(getResult(postFix));
-                clear_flag = true;
+                if(numberInputed) {//要以数字、右括号结尾的才可以被等于，此bug未修复
+                    String postFix = covertToPostFix(expressions);
+                    String result = getResult(postFix);
+                    text_input.setText(result);
+                    clear_flag = true;
+                }
                 break;
         }
     }
@@ -258,6 +288,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public String getResult(String postFix){
+        Stack<String> st = new Stack<String>();
         String c = "";
         char temp;
         for (int i =0; i < postFix.length();i++){
@@ -273,7 +304,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
             if (isOperator(c)){
-
                 double d2 = Double.valueOf(st.pop().toString());
                 double d1 = Double.valueOf(st.pop().toString());
                 double result = 0;
@@ -289,7 +319,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                     case "÷":
                         if (d2 == 0){
-                            text_input.setText("Error");
                             break;
                         }
                         result=d1/d2;
@@ -304,11 +333,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     value = value.replaceAll("0+?$", "");//去掉多余的0
                     value = value.replaceAll("[.]$", "");//如最后一位是.则去掉
                 }
-                st.push(value);
+                if(d2 == 0 && c.equals("÷"))
+                    st.push("Error");
+                else
+                    st.push(value);
                 c = "";
             }
         }
-        return st.pop();
+        if(st.peek().equals("Error")){
+            st.pop();
+            return "Error";
+        } else
+            return st.pop();
     }
 
     private int priority(String c){
