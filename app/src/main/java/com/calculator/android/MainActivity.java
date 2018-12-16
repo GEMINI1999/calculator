@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.multiply:
             case R.id.divide:
             case R.id.superplus:
-                if(str.charAt(str.length()- 1) >= '0' && str.charAt(str.length()- 1) <= '9' ||
+                if(str != null || !str.equals("")&&str.charAt(str.length()- 1) >= '0' && str.charAt(str.length()- 1) <= '9' ||
                         str.charAt(str.length() - 1) == ' '){
                     numberInputed = true;
                 }
@@ -140,8 +140,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     else
                         numberInputed = true;
-                    text_input.setText(str.substring(0, str.length() - 1));
-
+                    if(str.charAt(str.length() - 1) >= '0' && str.charAt(str.length() - 1) <= '9'
+                            || isOperator(String.valueOf(str.charAt(str.length() - 1))))
+                    {
+                        text_input.setText(str.substring(0, str.length() - 1));
+                    }
+                    else{
+                        text_input.setText(str.substring(0, str.length() - 2));
+                    }
                 }
                 if(str.equals(""))
                     numberInputed = false;
