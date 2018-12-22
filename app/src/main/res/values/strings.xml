@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">Calculator</string>
+    <string name="help">
+        1、"%"这个符号是什么意思？\n
+        这个符号是mod取余符号，所以想要把这个符号作为百分号用的同学请绕道。\n
+        2、为什么输入表达式错误时，计算器无法计算出结果？\n
+        这不是明知故问吗？你都输错表达式了，计算器当然不会计算出任何结果，所以请麻烦您输入正确的计算表达式。\n
+        3、这个简易计算器还有一些bug，请多多谅解，请在使用该计算器时，遵循如下推荐操作：\n
+    </string>
+    <string name="developer">
+        鹏哥Gemini\n
+    </string>
+    <string name="github">
+        Github主页：github.com/GEMINI1999\n
+        多多包涵，还没怎么会用这个平台\n
+    </string>
+    <string name="about">
+        第一次完整做完的APP，代码纯手打，如有bug，请见谅\n
+    </string>
 </resources>

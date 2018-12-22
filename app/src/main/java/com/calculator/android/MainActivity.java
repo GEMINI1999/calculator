@@ -1,17 +1,29 @@
 package com.calculator.android;
 
+import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.support.v7.widget.Toolbar;
 
+import java.math.BigDecimal;
 import java.util.Stack;
 
 /**
  * Created by yingyaopeng on 2018/12/8.
+ * 还有一些字符串处理方面的小bug,多多包涵
  */
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -20,11 +32,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView text_input;
     boolean clear_flag = false;
     boolean numberInputed = false;
+    DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        }
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                if(menuItem.getTitle().toString().equals("帮助")){
+                    Intent it = new Intent(MainActivity.this,HelpActivity.class);
+                    startActivity(it);
+                }else if(menuItem.getTitle().toString().equals("关于")){
+                    Intent it = new Intent(MainActivity.this,AboutActivity.class);
+                    startActivity(it);
+                }
+                return true;
+            }
+        });
 
         bt_0 = (Button)findViewById(R.id.zero);
         bt_1 = (Button)findViewById(R.id.one);
@@ -71,6 +107,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_superplus.setOnClickListener(this);
         bt_youkuohao.setOnClickListener(this);
         bt_zuokuohao.setOnClickListener(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                break;
+
+        }
+        return true;
     }
 
     @Override
@@ -171,74 +218,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
-//        private void getResult(){
-//        String exp = text_input.getText().toString();
-//        if(exp == null || exp.equals("")){s
-//            return;
-//        }
-//        if(!exp.contains(" ")){
-//            return;
-//        }
-//        if(clear_flag){
-//            clear_flag = false;
-//            return;
-//        }
-//        clear_flag = true;
-//        String str_1 = exp.substring(0, exp.indexOf(" ")); // 运算符前面的字符
-//        String str_op = exp.substring(exp.indexOf(" ") + 1, exp.indexOf(" ") + 2); //获取到运算符
-//        String str_2 = exp.substring(exp.indexOf(" ") + 3);   //运算符后面的数字
-//
-//        double result = 0;
-//        if(!str_1.equals("")&&!str_2.equals("")){
-//            double num_1 = Double.parseDouble(str_1);   //先将str_1、str_1强制转化为double类型
-//            double num_2 = Double.parseDouble(str_2);
-//
-//            if (str_op.equals("+")){
-//                result = num_1 + num_2;
-//            }else if(str_op.equals("%")) {
-//                result = num_1 % num_2;
-//            }else if (str_op.equals("-")){
-//                result = num_1 - num_2;
-//            }else if (str_op.equals("×")){
-//                result = num_1 * num_2;
-//            }else if (str_op.equals("÷")){
-//                if(num_2 == 0){
-//                    text_input.setText("错误");
-//                }else {
-//                    result = num_1 / num_2;
-//                }
-//            }
-//            if(!str_1.contains(".")&&!str_2.contains(".")&&!str_op.equals("÷")){
-//                int r = (int) result;
-//                text_input.setText(r+"");
-//            }else{
-//                text_input.setText(result+"");
-//            }
-//        }else if(!str_1.equals("")&&str_2.equals("")){
-//            text_input.setText(exp);
-//        }else if(str_1.equals("")&&!str_2.equals("")) {
-//            double num_2 = Double.parseDouble(str_2);
-//            if (str_op.equals("+")){
-//                result = 0 + num_2;
-//            }else if (str_op.equals("-")){
-//                result = 0 - num_2;
-//            }else if (str_op.equals("×")){
-//                result = 0;
-//            }else if (str_op.equals("÷")){
-//                result = 0;
-//            }else if (str_op.equals("%")){
-//                result = 0;
-//            }
-//            if(!str_2.contains(".")){
-//                int r = (int) result;
-//                text_input.setText(r+"");
-//            }else{
-//                text_input.setText(result+"");
-//            }
-//        }else{
-//            text_input.setText("");
-//        }
-  //  }
 
     public String covertToPostFix(String expressions) {
         Stack<String> stOperator = new Stack<String>();
@@ -310,27 +289,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
             if (isOperator(c)){
-                double d2 = Double.valueOf(st.pop().toString());
-                double d1 = Double.valueOf(st.pop().toString());
+                BigDecimal d2 = new BigDecimal(st.pop().toString());
+                BigDecimal d1 = new BigDecimal(st.pop().toString());
                 double result = 0;
                 switch (c){
                     case "+":
-                        result=d1+d2;
+                        result=d1.add(d2).doubleValue();
                         break;
                     case "-":
-                        result=d1-d2;
+                        result=d1.subtract(d2).doubleValue();
                         break;
                     case "×":
-                        result=d1*d2;
+                        result=d1.multiply(d2).doubleValue();
                         break;
                     case "÷":
-                        if (d2 == 0){
+                        if (d2.doubleValue() == 0){
                             break;
                         }
-                        result=d1/d2;
+                        result=d1.divide(d2,6,BigDecimal.ROUND_HALF_DOWN).doubleValue();
                         break;
                     case "%":
-                        result=d1%d2;
+                        if (d2.doubleValue() == 0){
+                            break;
+                        }
+                        result=d1.divideAndRemainder(d2)[1].doubleValue();
                     default:
                         break;
                 }
@@ -339,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     value = value.replaceAll("0+?$", "");//去掉多余的0
                     value = value.replaceAll("[.]$", "");//如最后一位是.则去掉
                 }
-                if(d2 == 0 && c.equals("÷"))
+                if(d2.doubleValue() == 0 && c.equals("÷")||c.equals("%"))
                     st.push("Error");
                 else
                     st.push(value);
@@ -353,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return st.pop();
     }
 
-    private int priority(String c){
+    private int priority(String    c){
         switch (c){
             case "+":
             case "-":
