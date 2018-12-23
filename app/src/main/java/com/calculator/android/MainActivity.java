@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ,bt_subtraction,bt_point,bt_del,bt_equal,bt_clear,bt_superplus,bt_zuokuohao,bt_youkuohao;
     TextView text_input;
     boolean clear_flag = false;
-    boolean numberInputed = false;
+    boolean numberInputed = false;//标记是否有数字输入
     DrawerLayout mDrawerLayout;
 
     @Override
@@ -134,16 +134,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.seven:
             case R.id.eight:
             case R.id.nine:
-            case R.id.point:
                 numberInputed = true;
                 if(clear_flag){
                     clear_flag = false;
                     str = "";
                     text_input.setText("");
                 }
-                if(str != null && !str.equals("") && isOperator(String.valueOf(str.charAt(str.length()- 1))))
+                if(!str.equals("") && isOperator(String.valueOf(str.charAt(str.length()- 1))))
                     text_input.setText(str + " " + ((Button)view).getText());
                 else {
+                    text_input.setText(str + ((Button) view).getText());
+                }
+                break;
+
+            case R.id.point:
+                if(numberInputed){
                     text_input.setText(str + ((Button) view).getText());
                 }
                 break;
@@ -161,16 +166,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.multiply:
             case R.id.divide:
             case R.id.superplus:
-                if(str != null || !str.equals("")&&str.charAt(str.length()- 1) >= '0' && str.charAt(str.length()- 1) <= '9' ||
-                        str.charAt(str.length() - 1) == ' '){
-                    numberInputed = true;
-                }
                 if(clear_flag){
                     clear_flag = false;
                     text_input.setText("");
                 }
-                if(str != null || numberInputed || !str.equals("")&&///???????????
-                        !isOperator(String.valueOf(str.charAt(str.length() - 1)))) {
+                if(!str.equals("") &&//当字符串最后一个字符是数字时，置数字输入标志为true
+                    (str.charAt(str.length()- 1) >= '0' && str.charAt(str.length()- 1) <= '9' )){
+                    numberInputed = true;
+                }
+                if(numberInputed || !str.equals("")&&//当字符串最后倒数第二个字符（即符号）不是符号时才可以输入运算符号
+                        !isOperator(String.valueOf(str.charAt(str.length() - 2)))) {
                     numberInputed = false;
                     text_input.setText(str + " " + ((Button) view).getText() + " ");
                 }
@@ -181,19 +186,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     clear_flag = false;
                     str = "";
                     text_input.setText("");
-                }else if(str != null && !str.equals("")) {//////!!!!!!
+                }else if(!str.equals("")) {
                     if(str.charAt(str.length() - 1) == ' '){
                         numberInputed = false;
                     }
                     else
                         numberInputed = true;
-                    if(str.charAt(str.length() - 1) >= '0' && str.charAt(str.length() - 1) <= '9'
-                            || isOperator(String.valueOf(str.charAt(str.length() - 1))))
-                    {
-                        text_input.setText(str.substring(0, str.length() - 1));
+                    if(str.length() >= 2 && (isOperator(String.valueOf(str.charAt(str.length() - 2)))
+                            || (str.charAt(str.length() - 2) == ')' || str.charAt(str.length() - 2) == ')'))) {
+                        text_input.setText(str.substring(0, str.length() - 3));
                     }
-                    else{
-                        text_input.setText(str.substring(0, str.length() - 2));
+                    else if(str.charAt(str.length() - 1) >= '0' && str.charAt(str.length() - 1) <= '9'
+                            || str.charAt(str.length() - 1) == '.'){
+                        text_input.setText(str.substring(0, str.length() - 1));
                     }
                 }
                 if(str.equals(""))
@@ -209,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.equal:
                 String expressions = text_input.getText().toString();
-                if(numberInputed) {//要以数字、右括号结尾的才可以被等于，此bug未修复
+                if(numberInputed) {
                     String postFix = covertToPostFix(expressions);
                     String result = getResult(postFix);
                     text_input.setText(result);
@@ -321,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     value = value.replaceAll("0+?$", "");//去掉多余的0
                     value = value.replaceAll("[.]$", "");//如最后一位是.则去掉
                 }
-                if(d2.doubleValue() == 0 && c.equals("÷")||c.equals("%"))
+                if(d2.doubleValue() == 0 && (c.equals("÷")||c.equals("%")))
                     st.push("Error");
                 else
                     st.push(value);
@@ -335,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return st.pop();
     }
 
-    private int priority(String    c){
+    private int priority(String c){
         switch (c){
             case "+":
             case "-":

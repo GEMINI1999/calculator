@@ -31,18 +31,28 @@
             android:gravity="center_horizontal"
             android:text="V 1.0.0"
             android:textStyle="bold"/>
-
-        <ScrollView
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <TextView
-                android:padding="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="@string/about" />
-        </ScrollView>
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textSize="15dp"
+            android:text="@string/developer"
+            android:textStyle="bold"/>
+        <TextView
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textSize="16dp"
+            android:text="@string/about" />
+        <TextView
+            android:id="@+id/textweb"
+            android:padding="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textSize="15dp"
+            android:textColor="#0000ff"
+            android:text="@string/github"/>
     </LinearLayout>
 </LinearLayout>
