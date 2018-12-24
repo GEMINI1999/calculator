@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView text_input;
     boolean clear_flag = false;
     boolean numberInputed = false;//标记是否有数字输入
+    boolean pointInput = false;
     DrawerLayout mDrawerLayout;
 
     @Override
@@ -148,9 +149,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.point:
-                if(numberInputed){
+                if(numberInputed && !pointInput){
                     text_input.setText(str + ((Button) view).getText());
                 }
+                pointInput = true;
                 break;
 
             case R.id.zuokuohao:
@@ -193,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     else
                         numberInputed = true;
                     if(str.length() >= 2 && (isOperator(String.valueOf(str.charAt(str.length() - 2)))
-                            || (str.charAt(str.length() - 2) == ')' || str.charAt(str.length() - 2) == ')'))) {
+                            || (str.charAt(str.length() - 2) == '(' || str.charAt(str.length() - 2) == ')'))) {
                         text_input.setText(str.substring(0, str.length() - 3));
                     }
                     else if(str.charAt(str.length() - 1) >= '0' && str.charAt(str.length() - 1) <= '9'
@@ -203,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 if(str.equals(""))
                     numberInputed = false;
+                pointInput = false;
                 break;
 
             case R.id.clear:
